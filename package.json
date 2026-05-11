@@ -1,0 +1,18 @@
+{
+  "name": "uptodatebackend",
+  "version": "1.0.0",
+  "description": "Backend for UpToDate - Information Freshness Scorer",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "ejs": "^5.0.2",
+    "express": "^5.2.1",
+    "mongoose": "^9.6.2",
+    "axios": "^1.6.0",
+    "cheerio": "^1.0.0-rc.12",
+    "natural": "^6.0.0"
+  }
+}
