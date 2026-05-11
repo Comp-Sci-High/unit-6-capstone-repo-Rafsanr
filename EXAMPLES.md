@@ -119,6 +119,93 @@ curl http://localhost:3000/api/history
 
 ---
 
+## 📚 MLA Citation Examples
+
+The API automatically generates MLA-formatted citations for analyzed sources!
+
+### Example 6: Get Citations from URL Analysis
+
+```bash
+curl -X POST http://localhost:3000/api/analyze-url \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://www.bbc.com/news/science_and_environment"
+  }' | jq '.pageCitation, .citations'
+```
+
+**Example Response:**
+```json
+"pageCitation": "BBC. \"Science and Environment News.\" BBC News, 11 May 2026, https://www.bbc.com/news/science_and_environment. Accessed 11 May 2026.",
+"citations": [
+  {
+    "url": "https://example.com/source1",
+    "title": "Climate Research Study",
+    "citation": "Smith, John, et al. \"Climate Patterns Analysis.\" Nature, 2024, https://example.com/source1. Accessed 11 May 2026."
+  },
+  {
+    "url": "https://example.com/source2",
+    "title": "IPCC Report Summary",
+    "citation": "United Nations Environment Programme. \"Climate Report 2024.\" IPCC, 2024, https://example.com/source2. Accessed 11 May 2026."
+  }
+]
+```
+
+### Using Citations in Your Work
+
+**1. Copy the main citation:**
+```
+BBC. "Science and Environment News." BBC News, 11 May 2026, 
+https://www.bbc.com/news/science_and_environment. Accessed 11 May 2026.
+```
+
+**2. Add to your Works Cited page** (alphabetically):
+```
+Works Cited
+
+BBC. "Science and Environment News." BBC News, 11 May 2026, 
+  https://www.bbc.com/news/science_and_environment. Accessed 11 May 2026.
+
+Smith, John, et al. "Climate Patterns Analysis." Nature, 2024, 
+  https://example.com/source1. Accessed 11 May 2026.
+
+United Nations Environment Programme. "Climate Report 2024." IPCC, 2024, 
+  https://example.com/source2. Accessed 11 May 2026.
+```
+
+### Citation Type Examples
+
+**Academic Source:**
+```
+Cornell University. "Machine Learning Papers." arXiv, 2024, 
+https://arxiv.org/abs/2405.10571. Accessed 11 May 2026.
+```
+
+**News Article:**
+```
+Reuters Staff. "Global Market Changes." Reuters, 10 May 2024, 
+https://www.reuters.com/markets. Accessed 11 May 2026.
+```
+
+**Wikipedia/Reference:**
+```
+Wikimedia Foundation. "Renewable Energy." Wikipedia, May 2026, 
+https://en.wikipedia.org/wiki/Renewable_Energy. Accessed 11 May 2026.
+```
+
+### Advanced: Get Citations Without Saving
+
+```bash
+curl -X POST http://localhost:3000/api/score-details \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://www.example.com/article"
+  }'
+```
+
+This returns citations without storing the analysis in the database.
+
+---
+
 ## Scoring Examples
 
 ### High Score (80+)

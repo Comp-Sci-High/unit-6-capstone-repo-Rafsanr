@@ -4,6 +4,7 @@ const Analysis = require("../models/Analysis");
 const ContentAnalyzer = require("../utils/analyzer");
 const Scorer = require("../utils/scorer");
 const ContentFetcher = require("../utils/contentFetcher");
+const MLACitationFormatter = require("../utils/mlaCitations");
 
 // Analyze a URL
 router.post("/analyze-url", async (req, res) => {
@@ -25,7 +26,10 @@ router.post("/analyze-url", async (req, res) => {
     }
 
     // Fetch and analyze the URL
-    const { text, metadata } = await ContentAnalyzer.analyzeURL(url);
+    const { text, metadata, citations } = await ContentAnalyzer.analyzeURL(url);
+
+    // Generate citation for the page itself
+    const pageCitation = ContentAnalyzer.generateSelfCitation(metadata, url);
 
     // Score the content
     const { score, breakdown, reasoning, factors } = Scorer.scoreContent(
@@ -43,6 +47,12 @@ router.post("/analyze-url", async (req, res) => {
       metadata,
       factors,
       reasoning,
+      citations: citations.map((c) => ({
+        url: c.url,
+        title: c.title,
+        citation: c.citation,
+      })),
+      pageCitation: pageCitation,
     });
 
     await analysis.save();
@@ -78,6 +88,12 @@ router.post("/analyze-text", async (req, res) => {
       text
     );
 
+    // For text input, create a generic citation format
+    const textCitation =
+      "Unknown Author. \"Submitted Text Content.\" Online Source, " +
+      new Date().getFullYear() +
+      ", Submitted for Analysis.";
+
     // Save to database
     const analysis = new Analysis({
       url: `text-${Date.now()}`,
@@ -88,6 +104,8 @@ router.post("/analyze-text", async (req, res) => {
       metadata,
       factors,
       reasoning,
+      pageCitation: textCitation,
+      citations: [],
     });
 
     await analysis.save();
@@ -141,19 +159,25 @@ router.post("/score-details", async (req, res) => {
   try {
     const { url, text } = req.body;
 
-    let metadata, scoreContent;
+    let metadata, scoreContent, pageCitation, citations = [];
 
     if (url) {
       if (!ContentFetcher.isValidURL(url)) {
         return res.status(400).json({ error: "Invalid URL format" });
       }
-      const { text: fetchedText, metadata: fetchedMetadata } =
+      const { text: fetchedText, metadata: fetchedMetadata, citations: fetchedCitations } =
         await ContentAnalyzer.analyzeURL(url);
       metadata = fetchedMetadata;
       scoreContent = fetchedText;
+      pageCitation = ContentAnalyzer.generateSelfCitation(fetchedMetadata, url);
+      citations = fetchedCitations || [];
     } else if (text) {
       metadata = ContentAnalyzer.analyzeText(text);
       scoreContent = text;
+      pageCitation =
+        "Unknown Author. \"Submitted Text Content.\" Online Source, " +
+        new Date().getFullYear() +
+        ", Submitted for Analysis.";
     } else {
       return res
         .status(400)
@@ -168,6 +192,12 @@ router.post("/score-details", async (req, res) => {
       factors: result.factors,
       reasoning: result.reasoning,
       metadata,
+      pageCitation,
+      citations: citations.map((c) => ({
+        url: c.url,
+        title: c.title,
+        citation: c.citation,
+      })),
     });
   } catch (error) {
     console.error(error);

@@ -96,6 +96,76 @@ class ContentFetcher {
 
     return externalCount;
   }
+
+  /**
+   * Extracts external sources/citations from the page
+   */
+  static extractExternalSources($, pageUrl) {
+    const sources = [];
+    const seenUrls = new Set();
+
+    // Find all external links
+    $("a[href]").each((i, element) => {
+      try {
+        let href = $(element).attr("href");
+        const text = $(element).text().trim();
+
+        // Skip fragments and empty links
+        if (!href || href.startsWith("#") || !text || seenUrls.has(href)) {
+          return;
+        }
+
+        // Convert relative URLs to absolute
+        if (href.startsWith("/")) {
+          const baseUrl = new URL(pageUrl);
+          href = baseUrl.protocol + "//" + baseUrl.host + href;
+        }
+
+        // Only include external links
+        if (href.startsWith("http")) {
+          seenUrls.add(href);
+          sources.push({
+            url: href,
+            title: text.substring(0, 200),
+            domain: new URL(href).hostname,
+          });
+        }
+      } catch (error) {
+        // Skip invalid URLs
+      }
+    });
+
+    // Also extract from citations/references
+    const refElements = $('[id*="ref"], [id*="citation"], .reference, .citation, .sources');
+    refElements.each((i, element) => {
+      const links = $(element).find("a[href]");
+      links.each((j, link) => {
+        try {
+          let href = $(link).attr("href");
+          const text = $(link).text().trim();
+
+          if (href && text && !seenUrls.has(href)) {
+            if (href.startsWith("/")) {
+              const baseUrl = new URL(pageUrl);
+              href = baseUrl.protocol + "//" + baseUrl.host + href;
+            }
+
+            seenUrls.add(href);
+            sources.push({
+              url: href,
+              title: text.substring(0, 200),
+              domain: new URL(href).hostname,
+              isCitation: true,
+            });
+          }
+        } catch (error) {
+          // Skip invalid URLs
+        }
+      });
+    });
+
+    return sources.slice(0, 20); // Limit to 20 sources
+  }
 }
 
 module.exports = ContentFetcher;

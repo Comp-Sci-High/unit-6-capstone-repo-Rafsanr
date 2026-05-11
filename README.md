@@ -36,6 +36,12 @@ UpToDate helps users quickly assess the reliability and freshness of online info
 - External link evaluation
 - Citation pattern recognition
 
+✅ **Automatic MLA Citation Generation** 🆕
+- Formats analyzed sources in MLA style
+- Extracts up to 20 referenced sources
+- One-click copy to clipboard
+- Smart detection of academic, news, and web sources
+
 ✅ **History & Storage**
 - All analyses stored in MongoDB
 - Quick access to past scores
@@ -46,6 +52,7 @@ UpToDate helps users quickly assess the reliability and freshness of online info
 - Real-time analysis
 - Visual score representation
 - Key factors highlighting
+- Citation display and management
 
 ## 🚀 Quick Start
 
@@ -167,6 +174,7 @@ UpToDate/
 
 - **[README_API.md](./README_API.md)** - Complete API reference and schema details
 - **[EXAMPLES.md](./EXAMPLES.md)** - Usage examples, curl commands, troubleshooting
+- **[MLA_CITATIONS_GUIDE.md](./MLA_CITATIONS_GUIDE.md)** - MLA citation feature documentation
 - **[.env.example](./.env.example)** - Environment variable template
 
 ## 🎨 Web Interface
@@ -181,6 +189,8 @@ The frontend provides three main tabs:
 - Visual score representation with color coding
 - Detailed breakdown charts
 - Key factors with positive/warning indicators
+- **MLA Citation display** with copy-to-clipboard functionality
+- Referenced sources list with automatic citations
 - Responsive mobile-friendly design
 
 ## 💡 Scoring Logic

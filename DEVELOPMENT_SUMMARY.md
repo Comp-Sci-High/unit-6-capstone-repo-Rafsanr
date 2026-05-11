@@ -13,11 +13,13 @@ The **UpToDate** backend has been fully developed with all core features impleme
 #### 1. **Database Model** (`models/Analysis.js`)
 - MongoDB schema for storing all analyses
 - Tracks scores, breakdowns, metadata, and reasoning
+- **NEW:** Stores MLA citations for sources
 - Supports both URL and text content types
 
 #### 2. **Content Fetcher** (`utils/contentFetcher.js`)
 - Fetches and parses web pages using Axios & Cheerio
 - Extracts metadata (title, description, publication date, authors)
+- **NEW:** Extracts external sources and references
 - Identifies SSL certificates, external links, and citations
 - Validates URLs before fetching
 
@@ -25,9 +27,17 @@ The **UpToDate** backend has been fully developed with all core features impleme
 - Analyzes text and web content for key metrics
 - Counts words, sentences, and evaluates grammar quality
 - Identifies authors, references, and citations
+- **NEW:** Generates MLA citations for analyzed pages
 - Calculates variance in sentence structure
 
-#### 4. **Scoring Engine** (`utils/scorer.js`)
+#### 4. **MLA Citation Formatter** (`utils/mlaCitations.js`) 🆕
+- Automatically formats sources in MLA style
+- Detects source type (academic, news, web)
+- Recognizes 20+ major publishers and news outlets
+- Formats dates, authors, and URLs correctly
+- Handles multiple source types
+
+#### 5. **Scoring Engine** (`utils/scorer.js`)
 - **4-factor weighted algorithm**:
   - Age Score (30%) - Publication date recency
   - Credibility Score (25%) - Source trustworthiness
@@ -36,22 +46,24 @@ The **UpToDate** backend has been fully developed with all core features impleme
 - Identifies key factors explaining the score
 - Generates human-readable reasoning
 
-#### 5. **API Routes** (`routes/api.js`)
-- `POST /api/analyze-url` - Analyze website URLs
+#### 6. **API Routes** (`routes/api.js`) 🆕
+- `POST /api/analyze-url` - Analyze website URLs (now with citations)
 - `POST /api/analyze-text` - Analyze text content
 - `GET /api/history` - Retrieve analysis history
 - `GET /api/analysis/:id` - Get specific analysis
-- `POST /api/score-details` - Get scoring breakdown
+- `POST /api/score-details` - Get scoring breakdown with citations
 - `DELETE /api/analysis/:id` - Delete analysis
 
-#### 6. **Web Interface** (`views/index.ejs`)
+#### 7. **Web Interface** (`views/index.ejs`) 🆕
 - Beautiful, responsive frontend
 - Three tabs: URL Analysis, Text Analysis, History
 - Real-time scoring with visual feedback
+- **NEW:** MLA Citation display section
+- **NEW:** Referenced sources with one-click copy
 - Gradient color-coded score circles
 - Breakdown charts and key factors display
 
-#### 7. **Main Server** (`index.js`)
+#### 8. **Main Server** (`index.js`)
 - Express.js setup with middleware
 - MongoDB connection
 - Static file serving
@@ -388,6 +400,10 @@ For issues:
 - [x] API endpoints
 - [x] Error handling
 - [x] Documentation
+- [x] **MLA Citation Generation** 🆕
+- [x] **Source Extraction and Formatting** 🆕
+- [x] **Citation Display in UI** 🆕
+- [x] **One-Click Copy Citations** 🆕
 
 Ready for testing and deployment! 🚀
 

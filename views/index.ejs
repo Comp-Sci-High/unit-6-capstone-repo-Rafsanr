@@ -321,6 +321,118 @@
       min-width: 60px;
       text-align: right;
     }
+
+    /* Citations Styling */
+    .citations-section {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 25px;
+      border: 2px solid #e8e8ff;
+    }
+
+    .citations-section h4 {
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 1.1em;
+    }
+
+    .citation-item {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+      margin-bottom: 12px;
+    }
+
+    .citation-box {
+      background: white;
+      padding: 12px;
+      border-radius: 6px;
+      margin: 12px 0;
+      border: 1px solid #ddd;
+      margin-bottom: 10px;
+    }
+
+    .citation-text {
+      color: #333;
+      font-family: "Georgia", serif;
+      font-size: 0.95em;
+      line-height: 1.5;
+      word-break: break-word;
+      margin: 0;
+      padding: 10px 0;
+    }
+
+    .copy-btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.85em;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: #764ba2;
+      transform: translateY(-1px);
+    }
+
+    .sources-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .source-item {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #eee;
+      border-left: 4px solid #667eea;
+    }
+
+    .source-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .source-number {
+      background: #667eea;
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.85em;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .source-title {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+      flex: 1;
+      word-break: break-word;
+      transition: color 0.2s;
+    }
+
+    .source-title:hover {
+      color: #764ba2;
+      text-decoration: underline;
+    }
+
+    .citation-box {
+      margin-left: 34px;
+    }
   </style>
 </head>
 <body>
@@ -541,10 +653,70 @@
             })
             .join("")}
         </div>
+
+        ${data.pageCitation ? `
+        <div class="citations-section">
+          <h4>📚 MLA Citation</h4>
+          <div class="citation-item">
+            <p class="citation-text">${escapeHtml(data.pageCitation)}</p>
+            <button class="copy-btn" onclick="copyCitation('${escapeHtml(data.pageCitation).replace(/'/g, "\\'")}')">Copy Citation</button>
+          </div>
+        </div>
+        ` : ""}
+
+        ${data.citations && data.citations.length > 0 ? `
+        <div class="citations-section">
+          <h4>🔗 Referenced Sources (${data.citations.length})</h4>
+          <div class="sources-list">
+            ${data.citations
+              .slice(0, 10)
+              .map(
+                (source, idx) => `
+              <div class="source-item">
+                <div class="source-header">
+                  <span class="source-number">${idx + 1}.</span>
+                  <a href="${source.url}" target="_blank" title="${source.title}" class="source-title">
+                    ${source.title.substring(0, 80)}${source.title.length > 80 ? "..." : ""}
+                  </a>
+                </div>
+                <div class="citation-box">
+                  <p class="citation-text">${escapeHtml(source.citation)}</p>
+                  <button class="copy-btn" onclick="copyCitation('${escapeHtml(source.citation).replace(/'/g, "\\'")}')">Copy</button>
+                </div>
+              </div>
+            `
+              )
+              .join("")}
+            ${data.citations.length > 10 ? `<p style="color: #999; font-size: 0.9em; margin-top: 10px;">... and ${data.citations.length - 10} more sources</p>` : ""}
+          </div>
+        </div>
+        ` : ""}
       `;
 
       document.getElementById(resultId).innerHTML = html;
       document.getElementById(resultId).classList.add("show");
+    }
+
+    function escapeHtml(text) {
+      const map = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;",
+      };
+      return text.replace(/[&<>"']/g, (m) => map[m]);
+    }
+
+    function copyCitation(citation) {
+      navigator.clipboard
+        .writeText(citation)
+        .then(() => {
+          alert("Citation copied to clipboard!");
+        })
+        .catch(() => {
+          alert("Failed to copy citation");
+        });
     }
 
     async function loadHistory() {

@@ -45,6 +45,17 @@ const analysisSchema = new mongoose.Schema(
     },
     factors: [String],
     reasoning: String,
+    pageCitation: {
+      type: String,
+      default: null,
+    },
+    citations: [
+      {
+        url: String,
+        title: String,
+        citation: String,
+      },
+    ],
   },
   { timestamps: true }
 );

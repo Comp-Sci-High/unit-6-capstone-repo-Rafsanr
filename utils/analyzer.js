@@ -1,4 +1,5 @@
 const ContentFetcher = require("./contentFetcher");
+const MLACitationFormatter = require("./mlaCitations");
 
 class ContentAnalyzer {
   static async analyzeURL(url) {
@@ -7,6 +8,7 @@ class ContentAnalyzer {
 
       const text = ContentFetcher.extractText($);
       const metadata = ContentFetcher.extractMetadata(url, $);
+      const externalSources = ContentFetcher.extractExternalSources($, url);
 
       const stats = {
         wordCount: this.countWords(text),
@@ -16,10 +18,28 @@ class ContentAnalyzer {
         cites: this.extractCitationCount($),
       };
 
+      // Generate MLA citations for external sources
+      const citationObjects = externalSources.map((source) => {
+        const sourceMetadata = {
+          url: source.url,
+          domain: source.domain,
+          title: source.title,
+          publicationDate: null,
+          author: null,
+        };
+        return {
+          url: source.url,
+          title: source.title,
+          citation: MLACitationFormatter.generateCitation(sourceMetadata),
+        };
+      });
+
       return {
         text,
         metadata: { ...metadata, ...stats },
         dom: $,
+        sources: externalSources,
+        citations: citationObjects,
       };
     } catch (error) {
       throw error;
@@ -33,6 +53,20 @@ class ContentAnalyzer {
       grammarScore: this.assessGrammarQuality(text),
       contentLength: text.length,
     };
+  }
+
+  /**
+   * Generates a self-citation for the page being analyzed
+   */
+  static generateSelfCitation(metadata, url) {
+    const pageMetadata = {
+      url: url,
+      domain: metadata.domain || "unknown",
+      title: metadata.title || "Untitled",
+      publicationDate: metadata.publicationDate || new Date(),
+      author: metadata.author || null,
+    };
+    return MLACitationFormatter.generateCitation(pageMetadata);
   }
 
   static countWords(text) {
