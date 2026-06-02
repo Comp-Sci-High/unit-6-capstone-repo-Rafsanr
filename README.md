@@ -193,7 +193,44 @@ The frontend provides three main tabs:
 - Referenced sources list with automatic citations
 - Responsive mobile-friendly design
 
-## 💡 Scoring Logic
+## � Admin Panel
+
+Access the admin dashboard at `http://localhost:3000/admin`
+
+### Admin Capabilities
+- **Create** - Add new analyses manually with custom scores
+- **Read** - View all analyses in a comprehensive table
+- **Update** - Edit existing analyses and their scores
+- **Delete** - Remove analyses from database
+- **Statistics** - Dashboard showing total analyses, average score, and URL count
+
+### Admin Features
+- Real-time statistics dashboard
+- Full CRUD management interface
+- Form validation and error handling
+- Success/error notifications
+- Responsive design for mobile and desktop
+- Quick edit/delete actions
+
+### Use Cases
+- Manually add historical analyses
+- Correct or update previous scores
+- Manage data quality
+- Clean up obsolete analyses
+- Bulk data management
+
+## ✅ MVP Verification
+
+**Status: COMPLETE** ✅
+
+All client requirements have been implemented. See [MVP_VERIFICATION.md](./MVP_VERIFICATION.md) for:
+- Complete feature checklist
+- CRUD operation verification
+- API endpoint status
+- Quality assurance details
+- Production readiness confirmation
+
+## �💡 Scoring Logic
 
 ### Age Score Calculation
 ```

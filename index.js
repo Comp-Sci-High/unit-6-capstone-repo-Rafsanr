@@ -30,6 +30,11 @@ app.get("/", (req, res) => {
   res.render("index");
 });
 
+// Admin panel
+app.get("/admin", (req, res) => {
+  res.render("admin");
+});
+
 
 
 

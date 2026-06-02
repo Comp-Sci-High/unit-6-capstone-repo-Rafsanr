@@ -226,4 +226,111 @@ router.delete("/analysis/:id", async (req, res) => {
   }
 });
 
+// Update analysis (for admin panel)
+router.put("/analysis/:id", async (req, res) => {
+  try {
+    const { contentType, url, content, score, breakdown, reasoning, pageCitation } = req.body;
+
+    if (!contentType || !score) {
+      return res.status(400).json({ error: "Content type and score are required" });
+    }
+
+    if (score < 1 || score > 100) {
+      return res.status(400).json({ error: "Score must be between 1 and 100" });
+    }
+
+    const analysis = await Analysis.findById(req.params.id);
+    if (!analysis) {
+      return res.status(404).json({ error: "Analysis not found" });
+    }
+
+    // Update fields
+    analysis.contentType = contentType;
+    if (contentType === "url") {
+      analysis.url = url || analysis.url;
+    } else if (contentType === "text") {
+      analysis.content = content || analysis.content;
+    }
+
+    analysis.score = score;
+    if (breakdown) {
+      analysis.breakdown = {
+        ageScore: breakdown.ageScore || analysis.breakdown?.ageScore || 50,
+        credibilityScore: breakdown.credibilityScore || analysis.breakdown?.credibilityScore || 50,
+        contentQualityScore: breakdown.contentQualityScore || analysis.breakdown?.contentQualityScore || 50,
+        sourceTrustScore: breakdown.sourceTrustScore || analysis.breakdown?.sourceTrustScore || 50,
+      };
+    }
+
+    if (reasoning) analysis.reasoning = reasoning;
+    if (pageCitation) analysis.pageCitation = pageCitation;
+
+    await analysis.save();
+
+    res.json({
+      message: "Analysis updated successfully",
+      analysis,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: "Failed to update analysis",
+      details: error.message,
+    });
+  }
+});
+
+// Create analysis directly (for admin panel)
+router.post("/analysis", async (req, res) => {
+  try {
+    const { contentType, url, content, score, breakdown, reasoning, pageCitation } = req.body;
+
+    if (!contentType || !score) {
+      return res.status(400).json({ error: "Content type and score are required" });
+    }
+
+    if (score < 1 || score > 100) {
+      return res.status(400).json({ error: "Score must be between 1 and 100" });
+    }
+
+    if (contentType === "url" && !url) {
+      return res.status(400).json({ error: "URL is required for URL type analysis" });
+    }
+
+    if (contentType === "text" && !content) {
+      return res.status(400).json({ error: "Content is required for text type analysis" });
+    }
+
+    const analysis = new Analysis({
+      url: contentType === "url" ? url : `text-${Date.now()}`,
+      content: contentType === "text" ? content : null,
+      contentType,
+      score,
+      breakdown: breakdown || {
+        ageScore: 50,
+        credibilityScore: 50,
+        contentQualityScore: 50,
+        sourceTrustScore: 50,
+      },
+      reasoning: reasoning || "Admin-created analysis",
+      pageCitation: pageCitation || null,
+      factors: [],
+      metadata: {},
+    });
+
+    await analysis.save();
+
+    res.status(201).json({
+      message: "Analysis created successfully",
+      analysis,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: "Failed to create analysis",
+      details: error.message,
+    });
+  }
+});
+
 module.exports = router;

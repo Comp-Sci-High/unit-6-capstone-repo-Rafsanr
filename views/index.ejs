@@ -461,6 +461,28 @@
     .citation-box {
       margin-left: 0;
     }
+
+    .delete-btn {
+      background: #ff3b30;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85em;
+      font-weight: 500;
+      transition: background 0.2s ease;
+    }
+
+    .delete-btn:hover {
+      background: #e63028;
+    }
+
+    .history-item-actions {
+      display: flex;
+      gap: 12px;
+      margin-left: 20px;
+    }
   </style>
 </head>
 <body>
@@ -760,12 +782,15 @@
           html = data
             .map(
               (item) =>
-                `<div class="history-item" onclick="loadHistoryItem('${item._id}')" style="cursor: pointer;">
-              <div class="history-item-text">
+                `<div class="history-item" style="display: flex; justify-content: space-between; align-items: center;">
+              <div class="history-item-text" onclick="loadHistoryItem('${item._id}')" style="cursor: pointer; flex: 1;">
                 <h5>${item.url || item.content.substring(0, 50)}</h5>
                 <p>${new Date(item.createdAt).toLocaleString()}</p>
               </div>
-              <div class="history-item-score">${item.score}</div>
+              <div style="display: flex; align-items: center; gap: 20px;">
+                <div class="history-item-score">${item.score}</div>
+                <button class="delete-btn" onclick="deleteAnalysis(event, '${item._id}')">Delete</button>
+              </div>
             </div>`
             )
             .join("");
@@ -775,6 +800,30 @@
       } catch (err) {
         document.getElementById("history-list").innerHTML =
           "<p style='color: red;'>Failed to load history</p>";
+      }
+    }
+
+    async function deleteAnalysis(event, id) {
+      event.stopPropagation();
+      
+      if (!confirm("Are you sure you want to delete this analysis? This action cannot be undone.")) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/analysis/${id}`, {
+          method: "DELETE",
+        });
+
+        if (!response.ok) {
+          const data = await response.json();
+          throw new Error(data.error || "Failed to delete analysis");
+        }
+
+        alert("✅ Analysis deleted successfully!");
+        loadHistory();
+      } catch (err) {
+        alert("❌ Error: " + err.message);
       }
     }
 
