@@ -370,6 +370,30 @@
       color: #666;
       margin-bottom: 8px;
     }
+
+    @media (max-width: 960px) {
+      body {
+        padding: 20px 16px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .button-group,
+      .actions {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .table-container {
+        overflow-x: auto;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>

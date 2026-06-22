@@ -483,23 +483,68 @@
       gap: 12px;
       margin-left: 20px;
     }
+
+    @media (max-width: 900px) {
+      body {
+        padding: 20px 16px;
+      }
+
+      .container {
+        width: 100%;
+        padding: 0;
+      }
+
+      .tabs {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .score-display {
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .breakdown {
+        grid-template-columns: 1fr;
+      }
+
+      .history-item {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .history-item-actions {
+        margin-left: 0;
+        justify-content: flex-start;
+      }
+
+      .form-group input,
+      .form-group textarea {
+        font-size: 0.95em;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>📰 UpToDate</h1>
-    <p class="subtitle">
-      Score the freshness and accuracy of any information online (1-100)
-    </p>
+    <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;">
+      <div>
+        <h1>📰 UpToDate</h1>
+        <p class="subtitle">
+          Score the freshness and accuracy of any information online (1-100)
+        </p>
+      </div>
+      <a href="/admin" class="admin-link" style="background:#000;color:#fff;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:600;">Go to Admin Panel</a>
+    </div>
 
     <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('url')">
+      <button class="tab-btn active" onclick="switchTab(event, 'url')">
         Analysis by URL
       </button>
-      <button class="tab-btn" onclick="switchTab('text')">
+      <button class="tab-btn" onclick="switchTab(event, 'text')">
         Analysis by Text
       </button>
-      <button class="tab-btn" onclick="switchTab('history')">
+      <button class="tab-btn" onclick="switchTab(event, 'history')">
         History
       </button>
     </div>
@@ -563,7 +608,7 @@
   </div>
 
   <script>
-    function switchTab(tabName) {
+    function switchTab(event, tabName) {
       // Hide all tabs
       document.querySelectorAll(".tab-content").forEach((tab) => {
         tab.classList.remove("active");
@@ -574,7 +619,9 @@
 
       // Show selected tab
       document.getElementById(tabName).classList.add("active");
-      event.target.classList.add("active");
+      if (event && event.target) {
+        event.target.classList.add("active");
+      }
 
       if (tabName === "history") {
         loadHistory();
